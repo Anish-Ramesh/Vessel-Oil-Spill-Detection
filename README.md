@@ -2,7 +2,8 @@
 
 > **Empowering Maritime Intelligence with Real-Time Data & Analytics**
 
-**Vessel Anomaly Detection System** is a comprehensive maritime tracking and analysis platform designed to provide real-time insights into vessel movements, environmental conditions, and satellite imagery. By integrating multiple data sources, it offers a holistic view of maritime activities, aiding in navigation, monitoring, and decision-making.
+**Vessel Anomaly Detection System** is a comprehensive maritime tracking and analysis platform designed to provide real-time insights into vessel movements, environmental conditions, and satellite imagery. By integrating multiple data sources, it offers a holistic view of maritime activities, aiding in navigation, monitoring, and decision-making. The application features a modern, responsive user interface with **glowing interactive cards** and a robust backend that handles data caching and rate limiting to ensure reliability.
+
 
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 [![React](https://img.shields.io/badge/React-18.x-blue)](https://react.dev/)
@@ -12,8 +13,6 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green)](https://www.mongodb.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC)](https://tailwindcss.com/)
 [![Vercel](https://img.shields.io/badge/Vercel-Deployed-black)](https://vercel.com/)
-
-The application features a modern, responsive user interface with **glowing interactive cards** and a robust backend that handles data caching and rate limiting to ensure reliability.
 
 ---
 
