@@ -66,7 +66,8 @@ const NAME_TO_MMSI = {
 };
 
 // Main Endpoint
-app.get('/vessel-position', async (req, res) => {
+// Handle both /vessel-position (local) and /api/vessel-position (Vercel)
+const handleVesselPosition = async (req, res) => {
     const query = req.query.name;
 
     if (!query) {
@@ -347,7 +348,10 @@ app.get('/vessel-position', async (req, res) => {
 
         res.status(500).json({ error: 'Internal Server Error', details: err.message });
     }
-});
+};
+
+app.get('/vessel-position', handleVesselPosition);
+app.get('/api/vessel-position', handleVesselPosition);
 
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {
