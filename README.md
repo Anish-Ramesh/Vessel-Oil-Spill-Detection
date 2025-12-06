@@ -29,8 +29,10 @@
 *   **🌤️ Live Weather**: Access real-time weather conditions (temperature, wind, humidity) for any vessel's location.
 
 ### ⚙️ Backend & Performance
-*   **Smart Caching**: Uses MongoDB Atlas to cache vessel data, reducing API calls and latency.
-*   **TTL Indexing**: Automatically expires stale data after **1 hour**.
+*   **Smart Caching**: Uses MongoDB Atlas with a dual-collection strategy:
+    *   **VesselCache**: Caches vessel data for **24 hours** to optimize API usage.
+    *   **VesselHistory**: Permanently stores all fetched vessel data for historical analysis.
+*   **TTL Indexing**: Automatically expires cache data after **1 day** while preserving history.
 *   **Rate Limit Protection**: Intelligent fallback mechanisms to prevent API exhaustion.
 *   **Mock Data Fallback**: Ensures the application remains functional even when external APIs are down.
 
