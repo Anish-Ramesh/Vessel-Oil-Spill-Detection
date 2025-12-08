@@ -16,6 +16,7 @@ const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
 const MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN;
 // ML Service URL (Hugging Face or Local)
 const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://127.0.0.1:5001/predict';
+console.log(`[DEBUG] Configured ML_SERVICE_URL: ${ML_SERVICE_URL}`);
 
 // Helper function to fetch weather
 async function fetchWeather(lat, lon) {
@@ -117,11 +118,14 @@ const handleVesselPosition = async (req, res) => {
             // --- OIL SPILL DETECTION (Moved to shared logic in future refactor) ---
             let oilSpillData = null;
             try {
-                // console.log("Creating oil spill detection request (Cache Hit)...");
+                console.log(`[DEBUG] Calling ML Service at: ${ML_SERVICE_URL} (Cache Hit)`);
                 const imageBase64 = Buffer.from(satelliteImage).toString('base64');
+
                 const mlResponse = await axios.post(ML_SERVICE_URL, {
                     image: imageBase64
                 });
+
+                console.log(`[DEBUG] ML Service Response Status: ${mlResponse.status} (Cache Hit)`);
 
                 if (mlResponse.data) {
                     oilSpillData = mlResponse.data;
@@ -131,7 +135,13 @@ const handleVesselPosition = async (req, res) => {
                     }
                 }
             } catch (mlError) {
-                console.error("Oil Spill Detection Service Failed (Cache Hit):", mlError.message);
+                console.error("[ERROR] Oil Spill Detection Service Failed (Cache Hit)");
+                console.error(`[ERROR] URL Used: ${ML_SERVICE_URL}`);
+                console.error(`[ERROR] Message: ${mlError.message}`);
+                if (mlError.response) {
+                    console.error(`[ERROR] Status: ${mlError.response.status}`);
+                    console.error(`[ERROR] Data:`, JSON.stringify(mlError.response.data));
+                }
                 oilSpillData = { error: "Service Unavailable" };
             }
             // ---------------------------------------------------------------------
