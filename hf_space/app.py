@@ -282,20 +282,6 @@ def get_vessel_position():
         return jsonify({'error': 'Failed to fetch data'}), 500
 
 # -----------------------------
-# Static Files (Frontend)
-# -----------------------------
-@app.route('/')
-def index():
-    return send_from_directory('templates', 'index.html')
-
-@app.route('/<path:path>')
-def serve_static(path):
-    # Serve assets from 'static/assets'
-    if os.path.exists(os.path.join('static/assets', path)):
-         return send_from_directory('static/assets', path)
-    return send_from_directory('templates', path) # Fallback
-
-# -----------------------------
 # API Endpoint for ML Prediction
 # -----------------------------
 @app.route('/predict', methods=['POST', 'OPTIONS'])
@@ -373,6 +359,20 @@ def predict():
     except Exception as e:
         print(f"Error processing request: {e}")
         return jsonify({'error': str(e)}), 500
+
+# -----------------------------
+# Static Files (Frontend) - Catch All MUST BE LAST
+# -----------------------------
+@app.route('/')
+def index():
+    return send_from_directory('templates', 'index.html')
+
+@app.route('/<path:path>')
+def serve_static(path):
+    # Serve assets from 'static/assets'
+    if os.path.exists(os.path.join('static/assets', path)):
+         return send_from_directory('static/assets', path)
+    return send_from_directory('templates', path) # Fallback
 
 if __name__ == '__main__':
     print("Starting Flask ML Service on port 7860...")
