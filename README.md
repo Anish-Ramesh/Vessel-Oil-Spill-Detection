@@ -16,6 +16,32 @@ The application features a modern **React** frontend with glowing interactive ca
 
 ---
 
+## 🧐 What is this Project? (For Beginners)
+
+Imagine **Google Maps for ships**, but with a superpower: it can automatically detect **Oil Spills** from space using Artificial Intelligence.
+
+This application does three main things:
+1.  **Tracks Ships**: It finds out where a ship is right now using its unique ID (like a license plate).
+2.  **Sees from Space**: It captures a satellite photo of that exact location.
+3.  **Detects Pollution**: It uses a "Brain" (AI Model) to scan that photo. If it sees an oil spill, it highlights it in red and warns us.
+
+---
+
+## 📚 Glossary: Key Terms Explained
+
+Before you dive into the technical details, here are some terms you might see:
+
+-   **MMSI (Maritime Mobile Service Identity)**:
+    -   *Think of it as:* A **Phone Number** for a ship. Every ship has a unique 9-digit number. We use this to find them.
+-   **AIS (Automatic Identification System)**:
+    -   *Think of it as:* **GPS for ships**. Ships constantly broadcast "I am here!" signals. We listen to these to know their location.
+-   **Semantic Segmentation (The AI Part)**:
+    -   *Think of it as:* A **Digital Highlighter**. Instead of just saying "There is oil," our AI colors the exact pixels of the image where the oil is, separating it from the water.
+-   **API (Application Programming Interface)**:
+    -   *Think of it as:* A **Waiter** in a restaurant. We (the customer) ask the waiter (API) for data (food) from the kitchen (Server), and they bring it back to us.
+
+---
+
 ## 🌟 Key Features
 
 ### 🖥️ Modern User Interface
@@ -36,34 +62,93 @@ The application features a modern **React** frontend with glowing interactive ca
 ### ⚙️ Backend & Performance
 *   **Smart Caching (MongoDB)**: Caches vessel data for **24 hours** to minimize API costs and rate limits.
 *   **Microservice Architecture**: Decouples the heavy ML inference (Python) from the main application logic (Node.js).
+*   **Mock Data Engine**: Includes a resilient fallback system. If external APIs (AIS/Weather) are down or rate-limited, the system automatically serves realistic "Mock Data" to ensure the UI never breaks during demos.
 
 ---
 
-## 📂 Folder Structure
+## 📖 User Manual: How to Use
+
+Once the app is running (see Quick Start), here is how to play with it:
+
+### 1. The Search Bar
+*   **Search by Name**: Type a ship name like `COMPASS` or `EVER GIVEN`.
+*   **Search by ID**: Type a 9-digit MMSI number (e.g., `244110352`).
+*   *Tip*: If you don't know any ships, just click "Search" with the default example to see a demo.
+
+### 2. The Dashboard Cards
+*   **🚢 Vessel Details**: Shows the static info (Flag, Dimensions, Type).
+*   **📍 Live Position**: Shows coordinates. Updates every few seconds if the ship is moving.
+*   **🌤️ Weather**: Real-time wind and temperature at that exact spot in the ocean.
+*   **🛰️ Satellite View**: The coolest part! It pulls the latest available satellite shot.
+
+### 3. Interpreting the AI Analysis
+The bottom card shows the **Oil Spill Analysis**.
+*   **✅ No Spill Detected**:
+    *   **Status**: Green Badge.
+    *   **Meaning**: The AI looked at the water and saw only water.
+*   **⚠️ OIL SPILL DETECTED**:
+    *   **Status**: Red Flashing Badge.
+    *   **Visual**: You will see a **Red Heatmap** overlaid on the satellite image.
+    *   **Action**: This indicates a high probability of pollution.
+
+---
+
+
+## 🏗️ Architecture
+
+The system uses a Microservices approach. Think of it as a team working together:
+
+| Component | Role | Analogy | Tech Stack |
+| :--- | :--- | :--- | :--- |
+| **Frontend** | **The Face** | The **Waiter** who shows you the menu. | React 19, Vite, Tailwind CSS |
+| **Backend** | **The Manager** | The **Kitchen Manager** who organizes orders. | Node.js, Express, MongoDB |
+| **ML Service** | **The Brain** | The **Specialist Chef** who cooks the AI dish. | Python, Flask, PyTorch |
+
+### 📂 Folder Structure
 
 ```
 Vessel-Tracking/
-├── frontend/             # React + Vite Frontend
+├── frontend/             # 🎨 React + Vite Frontend
 │   ├── src/components/   # UI Components (GlowingEffect, Boxes)
 │   └── src/App.jsx       # Main Dashboard UI
-├── final-version/        # Node.js Backend (API Gateway)
+├── final-version/        # 🚀 Node.js Backend (API Gateway)
 │   ├── server.js         # Express Server & caching logic
 │   └── db.js             # MongoDB Schema & Connection
-├── api/                  # Vercel Serverless Function Entrypoint
-│   └── index.js          # Bridges Vercel to Express
-├── Model/                # ML Development Environment
-│   ├── api.py            # Local Flask Interface for Model
-│   └── deeplabv3p_best.pth # Trained Model Weights
-├── hf_space/             # Deployment Bundle (All-in-One)
+├── hf_space/             # 🧠 Deployment Bundle (All-in-One)
 │   ├── app.py            # Combined Python Backend (ML + Logic)
 │   ├── Dockerfile        # Container config for Hugging Face
 │   ├── static/           # Built Frontend Assets
 │   └── templates/        # Frontend HTML
-├── package.json          # Root configuration for Vercel
-└── vercel.json           # Vercel Configuration (Alternative Deployment)
+├── Model/                # 🧪 Local ML Environment
+│   ├── api.py            # Local Flask Interface for Model
+│   └── deeplabv3p_best.pth # Trained Model Weights
+├── package.json          # Root configuration
+└── vercel.json           # Vercel Configuration
 ```
 
 ---
+
+## 🧪 Technical Deep Dive
+
+Why did we choose this specific tech stack?
+
+### 1. The AI Model: DeepLabV3+
+We didn't just pick any model; we chose **DeepLabV3+** because oil spills have irregular shapes and sizes.
+*   **Why?**: It uses *Atrous Spatial Pyramid Pooling (ASPP)*.
+*   **Translation**: It looks at the image with "different sized glasses" (zoom levels) simultaneously. This allows it to spot tiny oil leaks AND massive spills in the same image.
+
+### 2. Frontend: React 19 + Vite
+*   **Why?**: Speed. Traditional React apps can be slow to load.
+*   **Vite**: Uses modern browser features to serve files instantly, making the dashboard feel "native" and snappy.
+*   **Aceternity UI**: We used this library to give the "Glowing Glass" effect, which looks futuristic and matches the maritime theme.
+
+### 3. Database: MongoDB with TTL
+*   **Problem**: Storing every ship location forever would fill up the database in days.
+*   **Solution**: **TTL (Time-To-Live) Indexes**.
+*   **How it works**: We tell MongoDB, *"Delete any record that is older than 24 hours"*. This keeps our database small, free, and fast, acting like a self-cleaning cache.
+
+---
+
 
 ## 🚀 Deployment Options
 
@@ -76,10 +161,7 @@ Host the **Entire Application** (Frontend + Backend + ML) in a single Docker con
 2.  **Upload Files**: Upload the contents of the `hf_space/` directory.
     *   *Important*: Ensure `deeplabv3p_best.pth` is included.
 3.  **Environment Variables**: Set the following secrets in your Space settings:
-    *   `MONGO_URI`
-    *   `MAPBOX_ACCESS_TOKEN`
-    *   `WEATHER_API_KEY`
-    *   `RAPIDAPI_KEY`
+    *   `MONGO_URI`, `MAPBOX_ACCESS_TOKEN`, `WEATHER_API_KEY`, `RAPIDAPI_KEY`
 4.  **Run**: The Space will build and serve your app on port 7860.
 
 ### Option 2: Vercel + Hugging Face (Split)
@@ -88,55 +170,47 @@ Host Frontend/Backend on Vercel and ML Service on Hugging Face.
 1.  **ML Service**: Deploy `hf_space/` to Hugging Face (Port 7860).
 2.  **Frontend/Backend**: Deploy the root repo to **Vercel**.
     *   Set `ML_SERVICE_URL` in Vercel to your Hugging Face Space URL.
-    *   Set other API keys in Vercel.
 
 ---
 
-## 🛠️ Local Setup
+## 🛠️ Local Setup (Quick Start)
+
+We will set this up using **3 separate terminals**, because each part of the "Team" needs its own space to run.
 
 ### Prerequisites
-*   Node.js (v18+)
+*   Node.js (v18+) & npm
 *   Python (3.9+)
 *   MongoDB Atlas URI
 *   API Keys (Mapbox, OpenWeatherMap, RapidAPI)
 
-### 1. Install Dependencies
+### 1. Install Dependencies & Setup
 
-**Frontend:**
+**Terminal 1: The Brain (ML Service)**
 ```bash
-cd frontend
-npm install
+python -m venv venv
+source venv/bin/activate   # (Windows: venv\Scripts\activate)
+pip install -r hf_space/requirements.txt
+# Run the ML API
+python Model/api.py
 ```
+*Runs on Port 5001*
 
-**Backend:**
+**Terminal 2: The Manager (Backend)**
 ```bash
 cd final-version
 npm install
+# Create .env file here with your API Keys
+node server.js
 ```
+*Runs on Port 3000*
 
-**ML Service (Python):**
+**Terminal 3: The Face (Frontend)**
 ```bash
-python -m venv venv
-source venv/bin/activate
-pip install -r hf_space/requirements.txt
+cd frontend
+npm install
+npm run dev
 ```
-
-### 2. Configure Environment
-Create a `.env` file in `final-version/` and `Model/` (or root):
-```env
-MONGO_URI=mongodb+srv://...
-WEATHER_API_KEY=...
-MAPBOX_ACCESS_TOKEN=...
-RAPIDAPI_KEY=...
-ML_SERVICE_URL=http://127.0.0.1:5001/predict
-```
-
-### 3. Run the System
-You need 3 terminals:
-
-1.  **ML Service**: `python Model/api.py` (Runs on port 5001)
-2.  **Backend**: `node final-version/server.js` (Runs on port 3000)
-3.  **Frontend**: `cd frontend && npm run dev` (Runs on port 5173)
+*Runs on Port 5173. Click the link to view the app!*
 
 ---
 
@@ -156,8 +230,8 @@ Returns vessel data + ML analysis.
   "longitude": 6.497,
   "satelliteImage": "<base64>",
   "oilSpillData": {
-    "is_spill": false,
-    "confidence": 0.59,
+    "is_spill": true,
+    "confidence": 0.89,
     "analysisImage": "<base64_overlay>"
   }
 }
@@ -165,21 +239,32 @@ Returns vessel data + ML analysis.
 
 ---
 
----
-
 ## ❓ Troubleshooting
 
-### 1. `405 Method Not Allowed` on Hugging Face
+### 1. "Loading..." Forever / Black Screen
+*   **Cause**: The Frontend cannot talk to the Backend.
+*   **Fix**: Check **Terminal 2**. Is the server running? Did it crash?
+
+### 2. `405 Method Not Allowed` on Hugging Face
 *   **Cause**: The static file handler is catching the API request.
-*   **Fix**: Ensure `app.route('/predict')` is defined **before** `app.route('/<path:path>')` in `app.py`. We have fixed this in V3.
+*   **Fix**: Ensure `app.route('/predict')` is defined **before** `app.route('/<path:path>')` in `app.py`. (Fixed in V3).
 
-### 2. `MongoDB Connection Error`
-*   **Cause**: IP address not whitelisted in MongoDB Atlas.
-*   **Fix**: Go to Atlas -> Network Access -> Add IP Address -> Allow Access from Anywhere (0.0.0.0/0) or add the specific Serverless IP.
+### 3. Missing API Keys / Mock Data
+*   **Symptoms**: Weather says "N/A" or "Mock Data".
+*   **Fix**: The system automatically switches to **Mock Data** if keys are missing to prevent crashing. Double-check your `.env` file to see real data.
 
-### 3. Missing API Keys
-*   **Symptoms**: Weather showing "N/A" or Satellite image failing.
-*   **Fix**: Double-check your `.env` variables or Vercel Environment Variables.
+---
+
+
+
+## 🗺️ Future Roadmap
+
+We are constantly improving! Here is what's coming next:
+
+- [ ] **🔔 SMS/Email Alerts**: Automatically notify authorities when a spill > 50% confidence is detected.
+- [ ] **⏪ Historical Playback**: A "Time Slider" to watch a ship's path over the last 30 days.
+- [ ] **🛰️ Multi-Satellite Support**: Integration with **Sentinel-1 (Radar)**. Radar can see oil spills even through clouds and at night!
+- [ ] **📱 Mobile App**: A React Native version for Coast Guard officers on patrol.
 
 ---
 
