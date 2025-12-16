@@ -1,4 +1,4 @@
-# 🚢 Vessel Anomaly Detection System
+# 🚢 Vessel Anomaly Detection System 
 
 > **Empowering Maritime Intelligence with Real-Time Data & AI-Powered Surveillance**
 
